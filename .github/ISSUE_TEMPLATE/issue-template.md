@@ -1,7 +1,7 @@
 ---
 name: Issue Template
 about: Use this template for issue
-title: "[] : "
+title: "[] "
 assignees: jaeunda
 ---
 ## Goals
@@ -13,10 +13,6 @@ assignees: jaeunda
 
 ## Definition of Done
 - [ ]
-
-## Dependencies
-- Requires:
-- Required by:
 
 ##  References
 - 
