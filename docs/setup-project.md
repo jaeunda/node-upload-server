@@ -80,10 +80,20 @@ $ npm start
     "compilerOptions": {
         // 추가(라이브러리 호환성)
         "skipLibCheck": true,
+        // import express from 'express' - error 해결
         "forceConsistentCasingInFileNames": true
     },
     "include": ["src"] // compile directory
 }
+```
+##### ECMA Script vs. CommonJS
+- ECMA Script
+```
+import express from 'express'
+```
+- CommonJS
+```
+const express = require('express');
 ```
 
 ### Directory Structure
@@ -109,3 +119,4 @@ dist
 - [What is a tsconfig.json](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)
 - [npm Docs: `package.json`](https://docs.npmjs.com/cli/v10/configuring-npm/package-json)
 - [npm Docs: `scripts` field](https://docs.npmjs.com/cli/v8/using-npm/scripts)
+- [ts-node: CommonJS vs native ECMAScript modules](https://typestrong.org/ts-node/docs/imports)
