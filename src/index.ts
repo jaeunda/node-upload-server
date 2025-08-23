@@ -1,5 +1,10 @@
 import 'dotenv/config'
 import express from 'express'
+import fs from 'fs';
+import path from 'path';
+
+const uploadDir = path.join(__dirname, '..', 'uploads');
+fs.mkdirSync(uploadDir, { recursive: true });
 
 const app = express();
 app.use(express.json());
