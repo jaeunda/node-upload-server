@@ -100,6 +100,8 @@ jobs:
                     const isOverallFailure = [lint_outcome, test_outcome, build_outcome, docker_outcome].includes('failure');
                     const overallStatus = isOverallFailure ? getStatus('failure') : getStatus('success');
 
+                    const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
                     const body = `
                     ### ${overallStatus.icon} CI Overall: ${overallStatus.text}
 
@@ -114,9 +116,10 @@ jobs:
                     ${dist_listing}
                     \`\`\`
                     </details>
+
+                    [View Full Log ↗](${runUrl})
                     `;
 
-                    // Pull Request에 댓글을 작성합니다.
                     await github.rest.issues.createComment({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
