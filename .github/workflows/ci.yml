@@ -109,7 +109,7 @@ jobs:
                     | ${lint.icon} ${lint.text} | ${test.icon} ${test.text} | ${build.icon} ${build.text} | ${docker.icon} ${docker.text} |
 
                     <details>
-                    <summary>📦 Build Artifacts ( `dist/` )</summary>
+                    <summary>📦 Build Artifacts ( dist/ )</summary>
 
                     \`\`\`
                     ${dist_listing}
