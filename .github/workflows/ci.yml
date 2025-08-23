@@ -42,7 +42,7 @@ jobs:
             run: |
                 set -o pipefail
                 npm run build
-                echo "dist_listing<<'EOF'" >> "$GITHUB_OUTPUT"
+                echo "dist_listing<<EOF" >> "$GITHUB_OUTPUT"
                 (ls -la dist || echo "dist not found") >> "$GITHUB_OUTPUT"
                 echo "EOF" >> "$GITHUB_OUTPUT"
             
