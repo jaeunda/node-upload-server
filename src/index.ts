@@ -14,7 +14,7 @@ app.get('/health', (_req, res) => {
     res.json({  ok: true, ts: new Date().toISOString()  });
 });
 
-const MAX_FILE_SIZE_BYTES = 10*1024*1024;
+const MAX_FILE_SIZE_BYTES = Number(process.env.MAX_FILE_SIZE_BYTES || 10*1024*1024); 
 const storage = multer.diskStorage({
     destination: (_req, _file, cb) => cb(null, uploadDir),
     filename: (_req, file, cb) => cb(null, file.originalname) // 중복 파일
@@ -31,6 +31,7 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
 });
 
 app.use((err: any, req:express.Request, res:express.Response, next:express.NextFunction) => {
+    console.error(err);
     if (err instanceof multer.MulterError && err.code == 'LIMIT_FILE_SIZE'){
         return res.status(400).json({
             error: 'file_too_large',
