@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import express from 'express'
 import fs from 'fs';
+import multer from 'multer';
 import path from 'path';
 
 const uploadDir = path.join(__dirname, '..', 'uploads');
@@ -11,6 +12,21 @@ app.use(express.json());
 
 app.get('/health', (_req, res) => {
     res.json({  ok: true, ts: new Date().toISOString()  });
+});
+
+const storage = multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, uploadDir),
+    filename: (_req, file, cb) => cb(null, file.originalname)
+});
+const upload = multer({
+    storage: storage,
+    limits: {   fileSize: 10*1024*1024  } // 10MB
+});
+
+// POST /api/upload endpoint
+app.post('/app/upload', upload.single('file'), (req, res) => {
+    if (!req.file) return res.status(400).json({ error: 'no_file' });
+    res.json({  filename: req.file.filename, size: req.file.size  });
 });
 
 const PORT =  Number(process.env.PORT || 3000);
