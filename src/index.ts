@@ -16,20 +16,20 @@ app.get('/health', (_req, res) => {
 
 const storage = multer.diskStorage({
     destination: (_req, _file, cb) => cb(null, uploadDir),
-    filename: (_req, file, cb) => cb(null, file.originalname)
+    filename: (_req, file, cb) => cb(null, file.originalname) // 중복 파일
 });
 const upload = multer({
     storage: storage,
-    limits: {   fileSize: 10*1024*1024  } // 10MB
+    limits: {  fileSize: 10*1024*1024  } // 10MB
 });
 
 // POST /api/upload endpoint
-app.post('/app/upload', upload.single('file'), (req, res) => {
+app.post('/api/upload', upload.single('file'), (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'no_file' });
     res.json({  filename: req.file.filename, size: req.file.size  });
 });
 
 const PORT =  Number(process.env.PORT || 3000);
 app.listen(PORT, () => {
-    console.log('Server up on http://localhost:${PORT}');
+    console.log(`Server up on http://localhost:${PORT}`);
 });
