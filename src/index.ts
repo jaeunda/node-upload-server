@@ -52,6 +52,12 @@ app.get('/api/files', async (_req, res) => {
     }
 });
 
+app.get('/files/:name', (req, res) => {
+    const p = path.join(uploadDir, req.params.name);
+    if (!fs.existsSync(p)) return res.status(404).end('not found');
+    res.download(p);
+});
+
 app.use((err: any, req:express.Request, res:express.Response, next:express.NextFunction) => {
     console.error(err);
     if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE'){
