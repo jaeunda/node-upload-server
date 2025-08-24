@@ -37,6 +37,21 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
     res.json({  filename: req.file.filename, size: req.file.size  });
 });
 
+app.get('/api/files', async (_req, res) => {
+    try {
+        const entries = await fs.promises.readdir(uploadDir);
+        const stats = await Promise.all(entries.map(async (name) => {
+            const p = path.join(uploadDir, name);
+            const st = await fs.promises.stat(p);
+            if (!st.isFile()) return null;
+            return { name, size: st.size, mtime: st.mtime };
+        }));
+        res.json(stats.filter(Boolean));
+    } catch (e) {
+        res.status(500).json({  error: 'list_failed'  });
+    }
+});
+
 app.use((err: any, req:express.Request, res:express.Response, next:express.NextFunction) => {
     console.error(err);
     if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE'){
