@@ -54,8 +54,14 @@ app.get('/api/files', async (_req, res) => {
 
 app.get('/files/:name', (req, res) => {
     const p = path.join(uploadDir, req.params.name);
-    if (!fs.existsSync(p)) return res.status(404).end('not found');
-    res.download(p);
+    if (!fs.existsSync(p)) {
+        return res.status(404).json({
+            error: 'file_not_found',
+            message: 'File does not exist.'
+        })
+    } else {
+        res.download(p);
+    }
 });
 
 app.use((err: any, req:express.Request, res:express.Response, next:express.NextFunction) => {
