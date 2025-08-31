@@ -44,7 +44,7 @@ jobs:
         needs: build-and-test 
         runs-on: ubuntu-latest
         outputs:
-            test_outcome: ${{ steps.e2e-test.outcome }}
+            test_outcome: ${{ steps.test.outcome }}
         steps:
           - uses: actions/checkout@v4
           - uses: actions/setup-node@v4
@@ -61,11 +61,11 @@ jobs:
             run: sleep 3
           
           - name: Run E2E tests
-            id: e2e-test
+            id: test
             run: npm test
 
     docker-build-and-push:
-        needs: build-and-test
+        needs: e2e-test 
         runs-on: ubuntu-latest
         outputs:
             docker_outcome: ${{ steps.docker_build_push.outcome }}
@@ -91,6 +91,7 @@ jobs:
     pr-comment:
         needs:
             - build-and-test
+            - e2e-test
             - docker-build-and-push
         runs-on: ubuntu-latest
         if: always() && github.event_name == 'pull_request'
@@ -100,7 +101,7 @@ jobs:
             with:
                 script: |
                     const { lint_outcome, build_outcome, dist_listing } = ${{ toJSON(needs.build-and-test.outputs) }};
-                    const { test_outcome } = ${{ toJSON(needs.e2e-test.outputs )}};
+                    const { test_outcome } = ${{ toJSON(needs.e2e-test.outputs) }};
                     const { docker_outcome } = ${{ toJSON(needs.docker-build-and-push.outputs) }};
 
                     function getStatus(outcome) {
