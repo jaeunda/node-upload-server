@@ -3,6 +3,7 @@ import express from 'express'
 import fs from 'fs';
 import multer from 'multer';
 import path from 'path';
+import morgan from 'morgan'
 
 import files from './routes/api/files'
 
@@ -12,6 +13,7 @@ fs.mkdirSync(uploadDir, { recursive: true });
 const app = express();
 app.use(express.json());
 app.use('/api/files', files);
+app.use(morgan('dev'));
 
 app.get('/health', (_req, res) => {
     res.json({  ok: true, ts: new Date().toISOString()  });
