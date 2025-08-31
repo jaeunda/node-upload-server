@@ -10,7 +10,7 @@ REQ(){ curl -sS -f "$@"; }
 
 echo "== node-upload-server smoke test =="
 blue "[1] /health"; REQ "${BASE}/health" | pp
-blue "[2] /api/counter (optional)"; REQ "${BASE}/api/files" >/dev/null || true
+blue "[2] /api/files (optional)"; REQ "${BASE}/api/files" >/dev/null || true
 
 TMP="$(mktemp /tmp/node-upload-server.XXXXXX.txt)"
 echo "hello $(date -u +%FT%TZ)" > "$TMP"
