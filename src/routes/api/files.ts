@@ -1,7 +1,6 @@
 import { Router } from "express";
 import fs from "fs";
 import path from "path";
-import { nextTick } from "process";
 
 const r = Router();
 const uploadDir = path.join(__dirname, '..', '..', '..', 'uploads');

@@ -13,7 +13,6 @@ jobs:
         runs-on: ubuntu-latest
         outputs:
             lint_outcome: ${{ steps.lint.outcome }}
-            test_outcome: ${{ steps.test.outcome }}
             build_outcome: ${{ steps.build.outcome }}
             dist_listing: ${{ steps.build.outputs.dist_listing }}
         steps:
@@ -33,10 +32,6 @@ jobs:
             id: lint
             run: npm run lint --if-present
 
-          - name: Run Tests
-            id: test
-            run: npm test --if-present
-
           - name: Build project
             id: build
             run: |
@@ -45,9 +40,32 @@ jobs:
                 echo "dist_listing<<EOF" >> "$GITHUB_OUTPUT"
                 (ls -la dist || echo "dist not found") >> "$GITHUB_OUTPUT"
                 echo "EOF" >> "$GITHUB_OUTPUT"
-            
+    e2e-test:
+        needs: build-and-test 
+        runs-on: ubuntu-latest
+        outputs:
+            test_outcome: ${{ steps.test.outcome }}
+        steps:
+          - uses: actions/checkout@v4
+          - uses: actions/setup-node@v4
+            with:
+              node-version: 'lts/*'
+              cache: npm
+          - run: npm ci
+          - run: npm run build
+
+          - name: Start server in background
+            run: npm start &> server.log &
+
+          - name: Wait for server to be ready
+            run: sleep 3
+          
+          - name: Run E2E tests
+            id: test
+            run: npm test
+
     docker-build-and-push:
-        needs: build-and-test
+        needs: e2e-test 
         runs-on: ubuntu-latest
         outputs:
             docker_outcome: ${{ steps.docker_build_push.outcome }}
@@ -73,6 +91,7 @@ jobs:
     pr-comment:
         needs:
             - build-and-test
+            - e2e-test
             - docker-build-and-push
         runs-on: ubuntu-latest
         if: always() && github.event_name == 'pull_request'
@@ -81,7 +100,8 @@ jobs:
             uses: actions/github-script@v7
             with:
                 script: |
-                    const { lint_outcome, test_outcome, build_outcome, dist_listing } = ${{ toJSON(needs.build-and-test.outputs) }};
+                    const { lint_outcome, build_outcome, dist_listing } = ${{ toJSON(needs.build-and-test.outputs) }};
+                    const { test_outcome } = ${{ toJSON(needs.e2e-test.outputs) }};
                     const { docker_outcome } = ${{ toJSON(needs.docker-build-and-push.outputs) }};
 
                     function getStatus(outcome) {

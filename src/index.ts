@@ -32,6 +32,7 @@ const upload = multer({
         if (fs.existsSync(filePath)){
             return cb(new Error('file_already_exists'));
         }
+        cb(null, true);
     },
     preservePath: false
 });
@@ -44,9 +45,6 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
 
 app.use((err: any, req:express.Request, res:express.Response, next:express.NextFunction) => {
     console.error('[ERROR]', err);
-    if (res.headersSent){
-        return next(err);
-    }
     if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE'){
         return res.status(400).json({
             error: 'file_too_large',
