@@ -43,7 +43,10 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
 });
 
 app.use((err: any, req:express.Request, res:express.Response, next:express.NextFunction) => {
-    console.error(err);
+    console.error('[ERROR]', err);
+    if (res.headersSent){
+        return next(err);
+    }
     if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE'){
         return res.status(400).json({
             error: 'file_too_large',
@@ -56,7 +59,6 @@ app.use((err: any, req:express.Request, res:express.Response, next:express.NextF
             message: 'A file with that name already exists.'
         })
     }
-    
     res.status(500).json({
         error: 'internal_server_error',
         message: 'An unexpected error occurred.'
